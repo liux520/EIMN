@@ -2,9 +2,7 @@
 Xiao Liu<sup>1 </sup>, Xiangyu Liao<sup>1 </sup>, Xiuya Shi<sup>1 </sup>, [Linbo Qing](https://scholar.google.com.hk/citations?hl=zh-CN&user=0KRDflwAAAAJ)<sup>1 </sup> and [Chao Ren](https://scholar.google.com.hk/citations?hl=zh-CN&user=Y6OuBMYAAAAJ)<sup>1, *</sup>
 <sup>1</sup> Sichuan University,   <sup> *</sup> Corresponding Author
 
-[![Website](https://img.shields.io/badge/Project-Website-87CEEB)](https://mmaaz60.github.io/EdgeNeXt)
-[![paper](https://img.shields.io/badge/arXiv-Paper-<COLOR>.svg)](https://arxiv.org/abs/2206.10589)[![video](https://img.shields.io/badge/Video-Presentation-F9D371)](https://www.youtube.com/watch?v=Oh-ooHlx58o)[![slides](https://img.shields.io/badge/Presentation-Slides-B762C1)](https://mbzuaiac-my.sharepoint.com/:b:/g/personal/muhammad_maaz_mbzuai_ac_ae/EaFA4bSPEMBNlJuHMbKDD3UBHmwXrmpijSRqZITk2l1-wQ?e=b7ruLV)
-[![Supplementary materials](https://img.shields.io/badge/any_text-you_like-blue)]()
+[![Supplementary materials](https://img.shields.io/badge/any_text-you_like-blue)](https://github.com/liux520/EIMN/blob/main/Docs/supplementary%20material.pdf)
 
 <img src="images/Complexity.png" alt="complexity" style="zoom:100%;"/>
 
