@@ -135,7 +135,7 @@ CUDA_VISIBLE_DEVICES=0 python train.py --use_cuda --gpu_ids 0 --exp_name EIMN_L_
 --start_epoch 0 --epochs 1000 --model EIMN_L --epoch_eval --resume [pretrained x3 model] --finetune
 ```
 
-- Tips on the training or finetuning (We adopt a multi-stage training strategy similar to [RLFN](https://arxiv.org/pdf/2205.07514).)
+- Tips on the training or finetuning.
 
 ```
 x2 scale: 
