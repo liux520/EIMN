@@ -1,8 +1,9 @@
 # [ECAI-2023] Efficient Information Modulation Network for Image Super-Resolution
 Xiao Liu<sup>1 </sup>, Xiangyu Liao<sup>1 </sup>, Xiuya Shi<sup>1 </sup>, [Linbo Qing](https://scholar.google.com.hk/citations?hl=zh-CN&user=0KRDflwAAAAJ)<sup>1 </sup> and [Chao Ren](https://scholar.google.com.hk/citations?hl=zh-CN&user=Y6OuBMYAAAAJ)<sup>1, *</sup>
+
 <sup>1</sup> Sichuan University,   <sup> *</sup> Corresponding Author
 
-[![Supplementary materials](https://img.shields.io/badge/any_text-you_like-blue)](https://github.com/liux520/EIMN/blob/main/Docs/supplementary%20material.pdf)
+🤗 [Supplementary materials](https://github.com/liux520/EIMN/blob/main/Docs/supplementary%20material.pdf)
 
 <img src="images/complexity.png" alt="complexity" style="zoom:100%;"/>
 
@@ -17,13 +18,12 @@ Xiao Liu<sup>1 </sup>, Xiangyu Liao<sup>1 </sup>, Xiuya Shi<sup>1 </sup>, [Linbo
 
 > **Abstract:** Recent researches have shown that the success of Transformers comes from their macro-level framework and advanced components, not just their self-attention (SA) mechanism. Comparable results can be obtained by replacing SA with spatial pooling, shifting, MLP, fourier transform and constant matrix, all of which have spatial information encoding capability like SA. In light of these findings, this work focuses on combining efficient spatial information encoding technology with superior macro architectures in Transformers. 
 > We rethink spatial convolution to achieve more efficient encoding of spatial features and dynamic modulation value representations by convolutional modulation techniques. The large-kernel convolution and Hadamard product are utilizated in the proposed Multi-orders Long-range convolutional modulation (MOLRCM) layer to imitate the implementation of SA. Moreover, MOLRCM layer also achieve long-range correlations and self-adaptation behavior, similar to SA, with linear complexity. On the other hand, we also address the sub-optimality of vanilla feed-forward networks (FFN) by introducing spatial awareness and locality, improving feature diversity, and regulating information flow between layers in the proposed Spatial Awareness Dynamic Feature Flow Modulation (SADFFM) layer. Experiment results show that our proposed efficient information modulation network (EIMN) performs better both quantitatively and qualitatively.
-
 <hr />
 
 ## :sparkles: Synthetic Image SISR Results
 <details>
 	<summary><strong>Quantitative Comparison with SOTA</strong> (click to expand) </summary>
-    <p><img src = "images/table.png"  width=100% height=100%></p>
+    <p><img src = "https://github.com/liux520/EIMN/blob/main/images/table.png"  width=100% height=100%></p>
 	Quantitative comparison with SOTA methods on five popular benchmark datasets. Blue text indicates the best results. `Multi-Adds' is calculated with a 1280 $\times$ 720 HR image.
 </details>
 <details>
@@ -58,7 +58,6 @@ This repository is built in PyTorch 1.12.1 and trained on Centos 4.18.0 environm
 git clone https://github.com/liux520/EIMN.git
 cd DDDAN
 ```
-
 <hr />
 
 ## :computer: Usage
