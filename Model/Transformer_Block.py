@@ -17,7 +17,6 @@ __all__ = [
     'xavier_init', 'normal_init', 'trunc_normal_init', 'constant_init'
  ]
 
-""" ---------------------------------- Utils ---------------------------------- """
 
 def trunc_normal_(tensor, mean=0., std=1., a=-2., b=2.):
     # type: (Tensor, float, float, float, float) -> Tensor
