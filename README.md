@@ -119,7 +119,7 @@ CUDA_VISIBLE_DEVICES=0 python train_sr.py  --use_cuda --gpu_ids 0 --exp_name EIM
 --start_epoch 0 --epochs 1000 --model EIMN_L --epoch_eval 
 ```
 
-- Finetuning the model with scale factor 3
+- Finetuning the **EIMN_L** model with scale factor 3
 
 ```
 CUDA_VISIBLE_DEVICES=0 python train.py --use_cuda --gpu_ids 0 --exp_name EIMN_L_x3 --train_batchsize 16 --val_batchsize 1 \
@@ -127,7 +127,7 @@ CUDA_VISIBLE_DEVICES=0 python train.py --use_cuda --gpu_ids 0 --exp_name EIMN_L_
 --start_epoch 0 --epochs 1000 --model EIMN_L --epoch_eval --resume [pretrained x2 model] --finetune
 ```
 
-- Finetuning the model with scale factor 4
+- Finetuning the **EIMN_L** model with scale factor 4
 
 ```
 CUDA_VISIBLE_DEVICES=0 python train.py --use_cuda --gpu_ids 0 --exp_name EIMN_L_x4 --train_batchsize 16 --val_batchsize 1 \
