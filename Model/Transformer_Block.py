@@ -12,160 +12,10 @@ from einops import rearrange
 
 
 __all__ = [
-    'Mlp_Origin', 'Mlp_Dw', 'FeedForward', 'payattn_mlp', 'sparse_MLP',
-    'LayerNorm', 'LayerNorm_restormer',
     'trunc_normal_', '_no_grad_trunc_normal_',
     'drop_path', 'DropPath', '_ntuple',
     'xavier_init', 'normal_init', 'trunc_normal_init', 'constant_init'
  ]
-
-""" ---------------------------------- MLP ---------------------------------- """
-class Mlp_Origin(nn.Module):
-    """ Original """
-    def __init__(self, in_features, hidden_features=None, out_features=None, act_layer=nn.GELU, drop=0.):
-        super().__init__()
-        out_features = out_features or in_features
-        hidden_features = hidden_features or in_features
-        self.fc1 = nn.Linear(in_features, hidden_features)
-        self.act = act_layer()
-        self.fc2 = nn.Linear(hidden_features, out_features)
-        self.drop = nn.Dropout(drop)
-
-    def forward(self, x):
-        x = self.fc1(x)
-        x = self.act(x)
-        x = self.drop(x)
-        x = self.fc2(x)
-        x = self.drop(x)
-        return x
-
-
-class Mlp_Dw(nn.Module):
-    def __init__(self, in_features, hidden_features=None, out_features=None, act_layer=nn.GELU, drop=0.):
-        super().__init__()
-        out_features = out_features or in_features
-        hidden_features = hidden_features or in_features
-        self.fc1 = nn.Conv2d(in_features, hidden_features, 1)
-        self.dwconv = nn.Conv2d(hidden_features,hidden_features,3,1,1,groups=hidden_features)#DWConv(hidden_features)
-        self.act = act_layer()
-        self.fc2 = nn.Conv2d(hidden_features, out_features, 1)
-        self.drop = nn.Dropout(drop)
-
-        # self.attn = BiAttn(out_features)
-        # self.attn = eca(out_features)
-
-    def forward(self, x):
-        x = self.fc1(x)
-
-        x = self.dwconv(x)
-        x = self.act(x)
-        x = self.drop(x)
-        x = self.fc2(x)
-        x = self.drop(x)
-
-        # x=self.attn(x)
-
-        return x
-
-
-class FeedForward(nn.Module):
-    """https://github.com/swz30/Restormer/blob/main/basicsr/models/archs/restormer_arch.py"""
-    def __init__(self, dim, ffn_expansion_factor, bias):
-        super(FeedForward, self).__init__()
-
-        hidden_features = int(dim*ffn_expansion_factor)
-
-        self.project_in_ = nn.Conv2d(dim, hidden_features*2, kernel_size=1, bias=bias)
-
-        self.dwconv_ = nn.Conv2d(hidden_features*2, hidden_features*2, kernel_size=3, stride=1, padding=1, groups=hidden_features*2, bias=bias)
-
-        self.project_out_ = nn.Conv2d(hidden_features, dim, kernel_size=1, bias=bias)
-
-        self.attn = BiAttn(dim)
-        # self.attn = eca(dim)
-
-    def forward(self, x):
-        x = self.project_in_(x)
-        x1, x2 = self.dwconv_(x).chunk(2, dim=1)
-        x = F.gelu(x1) * x2 #self.ca(x2)
-        x = self.project_out_(x)
-        x = self.attn(x)
-        return x
-
-
-class BiAttn(nn.Module):
-    def __init__(self, in_channels, act_ratio=0.25, act_fn=nn.GELU, gate_fn=nn.Sigmoid):
-        super().__init__()
-        reduce_channels = int(in_channels * act_ratio)
-        self.norm = LayerNorm(in_channels, data_format='channels_first')
-        self.global_reduce = nn.Conv2d(in_channels, reduce_channels, 1) #Linear(in_channels, reduce_channels)
-        self.local_reduce = nn.Conv2d(in_channels, reduce_channels, 1)
-        self.act_fn = act_fn()
-        self.channel_select = nn.Conv2d(reduce_channels, in_channels, 1)
-        self.spatial_select = nn.Conv2d(reduce_channels * 2, 1, 1)
-        self.gate_fn = gate_fn()
-
-    def forward(self, x):
-        ori_x = x
-        b,c,h,w=x.shape
-        x = self.norm(x)
-        x_global = F.adaptive_avg_pool2d(x, 1) #x.mean(1, keepdim=True)
-        x_global = self.act_fn(self.global_reduce(x_global))
-        x_local = self.act_fn(self.local_reduce(x))
-
-        c_attn = self.channel_select(x_global)
-        c_attn = self.gate_fn(c_attn)  # [B, 1, C]
-        s_attn = self.spatial_select(torch.cat([x_local, x_global.expand(b, -1, x.shape[2], x.shape[3])], dim=1)) #.expand(-1, x.shape[1], -1)
-        s_attn = self.gate_fn(s_attn)  # [B, N, 1]
-
-        attn = c_attn * s_attn  # [B, N, C]
-        return ori_x * attn
-
-class payattn_mlp(nn.Module):
-    def __init__(self, in_features, hidden_features, out_features):
-        super(payattn_mlp, self).__init__()
-        super().__init__()
-        self.fc1 = nn.Conv2d(in_features, hidden_features, 1)
-        self.dwconv = nn.Conv2d(hidden_features, hidden_features, 3, 1, 1, groups=hidden_features)  # DWConv(hidden_features)
-        self.act = nn.GELU()
-        self.fc2 = nn.Conv2d(hidden_features//2, out_features, 1)
-        self.spatial_proj = nn.Conv2d(hidden_features // 2, hidden_features // 2, kernel_size=1)
-        self.norm = LayerNorm(hidden_features // 2 )
-        # nn.init.constant_(self.spatial_proj.bias, 1.0)
-        self.attn = BiAttn(out_features)
-
-    def forward(self, x):
-        x = self.fc1(x)
-        x = self.dwconv(x)
-        x = self.act(x)
-        u, v = x.chunk(2, dim=1)
-        v = self.norm(v)
-        v = self.spatial_proj(v)
-        out = u * v
-        out = self.fc2(out)
-        out = self.attn(out)
-        return out
-
-class sparse_MLP(nn.Module):
-    def __init__(self, W, H, channels):
-        super().__init__()
-        assert W == H
-        self.channels = channels
-        self.activation = nn.GELU()
-        self.BN = nn.Identity()#nn.BatchNorm2d(channels)
-        self.proj_h = nn.Conv2d(H, H, (1, 1))
-        self.proh_w = nn.Conv2d(W, W, (1, 1))
-        self.fuse = nn.Conv2d(channels*3, channels, (1,1), (1,1), bias=False)
-        self.attn = BiAttn(channels)
-
-    def forward(self, x):
-        x = self.activation(self.BN(x))
-        x_h = self.proj_h(x.permute(0, 3, 1, 2)).permute(0, 2, 3, 1)
-        x_w = self.proh_w(x.permute(0, 2, 1, 3)).permute(0, 2, 1, 3)
-        x = self.fuse(torch.cat([x, x_h, x_w], dim=1))
-        x = self.attn(x)
-        return x
-
 
 """ ---------------------------------- Utils ---------------------------------- """
 
@@ -400,13 +250,6 @@ class WithBias_LayerNorm(nn.Module):
         sigma = x.var(-1, keepdim=True, unbiased=False)
         return (x - mu) / torch.sqrt(sigma+1e-5) * self.weight + self.bias
 
-
-if __name__ == '__main__':
-    x=torch.randn(1,64,32,32)
-    y=F.adaptive_avg_pool2d(x, 1)
-    att=BiAttn(64)
-    z=att(x)
-    print(z.shape)
 
     zz=torch.randn(1,64,1,1)
     print((zz.expand(1, -1, x.shape[2], x.shape[3])).shape)
