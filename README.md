@@ -4,7 +4,7 @@ Xiao Liu<sup>1 </sup>, Xiangyu Liao<sup>1 </sup>, Xiuya Shi<sup>1 </sup>, [Linbo
 
 [![Supplementary materials](https://img.shields.io/badge/any_text-you_like-blue)](https://github.com/liux520/EIMN/blob/main/Docs/supplementary%20material.pdf)
 
-<img src="images/Complexity.png" alt="complexity" style="zoom:100%;"/>
+<img src="images/complexity.png" alt="complexity" style="zoom:100%;"/>
 
 <hr />
 
