@@ -102,7 +102,11 @@ cd DDDAN
 ### 1. Evaluation
 Download the pretrained weights here and run the following command for evaluation on five widely-used Benchmark datasets.
 ```
-CUDA_VISIBLE_DEVICES=0 python inference.py 
+python Demo/inference.py 
+```
+If you just want to generate an image, you can run demo.py.
+```
+python Demo/demo.py 
 ```
 
 ### 2. Training
