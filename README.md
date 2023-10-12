@@ -183,5 +183,15 @@ We thank the [XPixelGroup](https://github.com/XPixelGroup) for the excellent low
 If this work is helpful for you, please consider citing:
 
 ```
+@inbook{ECAI2023-EIMN,
+author = {Liu, Xiao and Liao, Xiangyu and Shi, Xiuya and Qing, Linbo and Ren, Chao},
+year = {2023},
+month = {09},
+pages = {},
+title = {Efficient Information Modulation Network for Image Super-Resolution},
+isbn = {9781643684369},
+doi = {10.3233/FAIA230435}
+}
+
 ```
 
