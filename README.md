@@ -3,7 +3,7 @@ Xiao Liu<sup>1 </sup>, Xiangyu Liao<sup>1 </sup>, Xiuya Shi<sup>1 </sup>, [Linbo
 
 <sup>1</sup> Sichuan University,   <sup> *</sup> Corresponding Author
 
-🤗 [Supplementary materials](https://github.com/liux520/EIMN/blob/main/Docs/supplementary%20material.pdf)
+🤗 [paper](https://ebooks.iospress.nl/doi/10.3233/FAIA230435) 😀 [Supplementary materials](https://github.com/liux520/EIMN/blob/main/Docs/supplementary%20material.pdf)
 
 <img src="images/complexity.png" alt="complexity" style="zoom:100%;"/>
 
