@@ -29,11 +29,12 @@ def tensor2uint8(img):
 
 
 if __name__ == '__main__':
+    """
+    You only need to modify the scale (2/3/4) and input_path (directory or single-image path)
+    """
     scale = 2
 
-    save = True
-    save_path = os.path.join(os.path.abspath(os.path.join(__file__, os.path.pardir)), 'outputs')
-    inputs_path = os.path.join(os.path.abspath(os.path.join(__file__, os.path.pardir)), 'inputs')
+    save_path = os.path.join(os.path.abspath(os.path.join(__file__, os.path.pardir, os.path.pardir)), 'outputs')
     check_dir(save_path)
 
     # ----------- device ---------- #
@@ -45,10 +46,14 @@ if __name__ == '__main__':
     model = model_import('EIMN_L', scale=scale, load_weights=True).to(device)
     model.eval()
 
-    lr_imgs = _get_paths_from_images(inputs_path)
-    # lr_imgs = ''
-    # if not isinstance(lr_imgs, (list, tuple)):
-    #     lr_imgs = [lr_imgs]
+    # input path: directory or single-image path
+    input_path = r'E:\Dataset\Restoration\SR\Benchmark\Set5\LRbicx4'
+
+    if os.path.isdir(input_path):
+        lr_imgs = _get_paths_from_images(input_path)
+    else:
+        lr_imgs = [input_path]
+
     with torch.no_grad():
         for im in tqdm(lr_imgs):
             base, ext = os.path.splitext(os.path.basename(im))

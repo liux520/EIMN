@@ -249,7 +249,3 @@ class WithBias_LayerNorm(nn.Module):
         mu = x.mean(-1, keepdim=True)
         sigma = x.var(-1, keepdim=True, unbiased=False)
         return (x - mu) / torch.sqrt(sigma+1e-5) * self.weight + self.bias
-
-
-    zz=torch.randn(1,64,1,1)
-    print((zz.expand(1, -1, x.shape[2], x.shape[3])).shape)
