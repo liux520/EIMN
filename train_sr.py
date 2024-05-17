@@ -23,7 +23,7 @@ from Metrics.psnr_ssim import _calculate_psnr_ssim_niqe
 '''Ignore Warnings'''
 warnings.filterwarnings("ignore")
 '''Drop problem images'''
-ImageFile.LOAD_TRUNCATED_IMAGES=True
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 np.seterr(divide='ignore', invalid='ignore')
 '''Wandb'''
 os.environ["WANDB_API_KEY"] = ''
@@ -82,7 +82,8 @@ class Trainer():
         """---------------------------------------------- Dataset --------------------------------------------"""
         from Data.dataset_paired import Dataloader
         self.train_dataloader, self.set5_dataloader, self.set14_dataloader, self.urban100_dataloader, self.manga109_dataloader = \
-            Dataloader(self.args.scale_factor, self.args.patch_size[0], self.args.train_batchsize, self.args.val_batchsize,
+            Dataloader(self.args.scale_factor, self.args.patch_size[0], self.args.train_batchsize,
+                       self.args.val_batchsize,
                        self.args.workers, pin_memory=self.args.pin_memory)
         self.train_dataloader_len = len(self.train_dataloader)
         print_info_message('Train:      Train_dataloader_len:{} | Train images:{}'.format(self.train_dataloader_len, self.args.train_batchsize * self.train_dataloader_len))
@@ -90,10 +91,12 @@ class Trainer():
 
         """-------------------------------------------- LR_scheduler -----------------------------------------"""
         if self.args.lr_scheduler == 'poly' or 'cos' or 'step' or 'multistep':
-            self.lr_scheduler_net = LR_Scheduler(self.args.lr_scheduler, base_lr=self.args.lr, num_epochs=self.args.epochs, iters_per_epoch=self.train_dataloader_len,
-                                                 lr_step=self.args.step_size,warmup_epochs=self.args.warmup_epochs, step_gamma=self.args.step_gamma, eta_min=1e-7)
+            self.lr_scheduler_net = LR_Scheduler(self.args.lr_scheduler, base_lr=self.args.lr,
+                                                 num_epochs=self.args.epochs, iters_per_epoch=self.train_dataloader_len,
+                                                 lr_step=self.args.step_size, warmup_epochs=self.args.warmup_epochs,
+                                                 step_gamma=self.args.step_gamma, eta_min=1e-7)
         elif self.args.lr_scheduler == 'reducelr':
-            self.lr_scheduler_net2 = torch.optim.lr_scheduler.ReduceLROnPlateau(self.optim_net,'min',0.5,6)
+            self.lr_scheduler_net2 = torch.optim.lr_scheduler.ReduceLROnPlateau(self.optim_net, 'min', 0.5, 6)
         print_info_message('Use {} scheduler mode'.format(self.args.lr_scheduler))
 
         """---------------------------------------------- EMA ---------------------------------------------"""
@@ -106,36 +109,31 @@ class Trainer():
         self.best_pred = 0.
         if self.args.resume is not None:
             checkpoint = torch.load(self.args.resume, map_location=self.device)
-            if len(checkpoint) < 10:
-                self.args.start_epoch = checkpoint['epoch'] + 1
-                if self.args.delete_module:
-                    checkpoint = delete_state_module(checkpoint)
-                ###
-                model_dict = self.G.module.state_dict()
-                overlap_ = {k: v for k, v in checkpoint['state_dict'].items() if k in model_dict}
-                model_dict.update(overlap_)
-                print_info_message(f'{(len(overlap_) * 1.0 / len(checkpoint["state_dict"]) * 100):.4f}% weights is loaded!')
-                print_info_message('These keys are not loaded!')
-                print([k for k, v in checkpoint['state_dict'].items() if k not in model_dict])
-                ###
-                self.G.module.load_state_dict(model_dict)
+            self.args.start_epoch = checkpoint['epoch'] + 1
+            if self.args.delete_module:
+                checkpoint = delete_state_module(checkpoint)
+            ###
+            model_dict = self.G.module.state_dict()
+            overlap = {k: v for k, v in checkpoint['state_dict'].items() if k in model_dict}
+            model_dict.update(overlap)
+            print_info_message(f'{(len(overlap) * 1.0 / len(checkpoint["state_dict"]) * 100):.4f}% weights is loaded!')
+            print_info_message(f'{(len(overlap) * 1.0 / len(model_dict) * 100):.4f}% params is init!')
+            print_info_message(f'Drop Keys: {[k for k, v in checkpoint["state_dict"].items() if k not in model_dict]}')
+            ###
+            self.G.module.load_state_dict(model_dict)
 
-                if not self.args.finetune:
-                    self.optim_net.load_state_dict(checkpoint['optimizer'])
-                    self.best_pred = checkpoint['best_pred']
-                    print_info_message('Not Finetune!')
-                elif self.args.finetune:
-                    self.args.start_epoch = 0
-                    self.best_pred = 0.0
-                    print_info_message(f'Finetune!')
+            if not self.args.finetune:
+                self.optim_net.load_state_dict(checkpoint['optimizer'])
+                self.best_pred = checkpoint['best_pred']
+                print_info_message('Not Finetune!')
+            elif self.args.finetune:
+                self.args.start_epoch = 0
+                self.best_pred = 0.0
+                print_info_message(f'Finetune!')
 
-                print_info_message(
-                    f"Loading checkpoint:'{self.args.resume}' epoch:{checkpoint['epoch']} previous_best_pred:{checkpoint['best_pred']}")
-            else:
-                print_info_message(
-                    f"Loading checkpoint:'{self.args.resume}")
+            print_info_message(f"Loading checkpoint:'{self.args.resume}' epoch:{checkpoint['epoch']} previous_best_pred:{checkpoint['best_pred']}")
 
-    def net_train(self,now_epoch):
+    def net_train(self, now_epoch):
         self.G.train()
         train_losses = AverageMeter()
         tbar = tqdm(self.train_dataloader, unit='image')
@@ -145,7 +143,7 @@ class Trainer():
             im, gt = im.to(self.device), gt.to(self.device)
 
             out = self.G(im)
-            loss = self.mse(out, gt) + 0.1 * self.fft(out, gt)
+            loss = self.l1(out, gt)  # + 0.1 * self.fft(out, gt)
 
             tbar.set_description(f'[Train Epoch:{now_epoch}] [train_loss: fft_loss: {0:.4f} SR_loss: {loss.item():.4f} Total_loss:{loss.item():.4f}]')
             train_losses.update(loss.item(), n=im.shape[0])
@@ -168,7 +166,7 @@ class Trainer():
 
         print_info_message('Epoch:{}, numImages:{}, Train_loss:{:.3f}'.format(epoch, i * self.args.train_batchsize + im.data.shape[0], train_losses.avg))
         if self.args.wandb: wandb.log({"total_train_loss": train_losses.avg})
-        self.saver.save_record_train(now_epoch,train_losses.avg)
+        self.saver.save_record_train(now_epoch, train_losses.avg)
 
     @torch.no_grad()
     def Benchmark(self, now_epoch):
@@ -295,11 +293,9 @@ class Trainer():
 
 if __name__ == '__main__':
     from option import args
+
     trainer = Trainer(args)
 
     for epoch in range(trainer.args.start_epoch, args.epochs):
         trainer.net_train(epoch)
     print(f'The last best predict is: {trainer.best_pred}')
-
-
-
