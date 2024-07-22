@@ -87,6 +87,7 @@ def delete_state_module(weights):
     return weights_dict
 
 
+@torch.no_grad()
 def test_on_custom_dataset(
         lr_path: str,
         hr_path: str,
