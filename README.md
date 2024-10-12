@@ -179,18 +179,20 @@ We thank the [XPixelGroup](https://github.com/XPixelGroup) for the excellent low
 
 <hr />
 
+## :pushpin: License
+This project is released under the [MIT license](LICENSE).
+
 ## :pray: Citation
 If this work is helpful for you, please consider citing:
 
 ```
-@inbook{ECAI2023-EIMN,
-author = {Liu, Xiao and Liao, Xiangyu and Shi, Xiuya and Qing, Linbo and Ren, Chao},
-year = {2023},
-month = {09},
-pages = {},
-title = {Efficient Information Modulation Network for Image Super-Resolution},
-isbn = {9781643684369},
-doi = {10.3233/FAIA230435}
+@incollection{EIMN,
+  title={Efficient Information Modulation Network for Image Super-Resolution},
+  author={Liu, Xiao and Liao, Xiangyu and Shi, Xiuya and Qing, Linbo and Ren, Chao},
+  booktitle={26th European Conference on Artificial Intelligence (ECAI)},
+  pages={1544--1551},
+  year={2023},
+  publisher={IOS Press}
 }
 
 ```
