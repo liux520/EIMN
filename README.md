@@ -56,7 +56,7 @@ This repository is built in PyTorch 1.12.1 and trained on Centos 4.18.0 environm
 1. Clone our repository
 ```
 git clone https://github.com/liux520/EIMN.git
-cd DDDAN
+cd EIMN
 ```
 <hr />
 
