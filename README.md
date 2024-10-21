@@ -10,7 +10,8 @@ Xiao Liu<sup>1 </sup>, Xiangyu Liao<sup>1 </sup>, Xiuya Shi<sup>1 </sup>, [Linbo
 <hr />
 
 ## :writing_hand: Changelog and ToDos
-- [x] (2023/8/20) Release training and evaluation code along with pre-trained models.
+- [x] (2024/10/20) We migrate this project to the BasicSR framework and release more experimental weights. Move [here](https://github.com/liux520/EIMN_BasicSR).
+- [x] (2023/08/20) Release training and evaluation code along with pre-trained models.
 <hr />
 
 ## :bulb: Abstract
